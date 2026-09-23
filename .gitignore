@@ -1,0 +1,28 @@
+# 前端
+node_modules/
+dist/
+*.local
+.vite/
+
+# 后端
+backend/data/
+*.db
+*.db-shm
+*.db-wal
+gv-dashboard
+
+# 日志
+*.log
+
+# 临时
+*.tmp
+*.swp
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# 操作系统
+.DS_Store
+Thumbs.db
