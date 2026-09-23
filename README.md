@@ -1,6 +1,6 @@
-# GV Dashboard 物联网设备监控平台
+# GV Dashboard 平台
 
-基于 **Vue 3 + Element Plus + Go + SQLite3** 的前后端分离物联网（IoT）管理平台，支持登录鉴权、设备运行看板（统计卡片 / 上报趋势 / 设备类型与状态分布 / 最新告警）与用户管理（增删改查）。
+基于 **Vue 3 + Element Plus + Go + SQLite3** 的前后端分离管理平台，支持登录鉴权、数据看板与用户管理。
 
 ## 技术栈
 
@@ -10,18 +10,6 @@
 | 后端 | Go 1.22+（标准库 net/http 路由）、JWT-less Token 鉴权 |
 | 数据库 | SQLite3（modernc.org/sqlite，纯 Go 驱动，无需 CGO） |
 
-## 业务模型
-
-平台围绕物联网设备的接入与运行监控组织数据：
-
-| 表 | 说明 |
-| --- | --- |
-| `devices` | 设备台账：编号、名称、类型、部署点位、运行状态（在线 / 离线 / 告警 / 维护）、固件版本、最后上报时间 |
-| `daily_metrics` | 每日运行指标：数据上报消息量、在线设备数 |
-| `alerts` | 设备告警记录：告警编号、关联设备、告警指标、级别（严重 / 警告 / 提示）、触发值、处理状态（未处理 / 处理中 / 已恢复）、告警时间 |
-| `users` / `tokens` | 平台用户与登录令牌 |
-
-设备类型覆盖环境传感器、智能电表、边缘网关、高清摄像头、温控器、智能水表、空气监测站、门禁控制器八类。
 
 ## 目录结构
 
@@ -103,23 +91,6 @@ npm run build      # 产出 dist/，后端会自动托管
 
 `GET /api/dashboard/overview` 返回结构：
 
-```json
-{
-  "stats": { "totalDevices": 24, "onlineDevices": 16, "todayMessages": 23000, "todayAlerts": 3 },
-  "trend": [{ "day": "2026-09-23", "messages": 23000, "devices": 15 }],
-  "monthTrend": [{ "day": "2026-09-23", "messages": 23000, "devices": 15 }],
-  "typeDist": [{ "name": "环境传感器", "value": 5 }],
-  "statusDist": [{ "name": "在线", "value": 16 }],
-  "recentAlerts": [
-    {
-      "id": 1, "alertNo": "AL202609230001", "deviceNo": "IOT-ENV-1001",
-      "deviceName": "1号厂房温湿度传感器", "location": "1号厂房A区",
-      "metric": "湿度超限", "level": "提示", "value": "92.4 %RH",
-      "status": "未处理", "createdAt": "2026-09-23 06:12:00"
-    }
-  ]
-}
-```
 
 ## 环境变量
 
