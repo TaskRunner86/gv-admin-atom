@@ -33,7 +33,7 @@ gv-admin-atom/
 
 ## 快速开始
 
-### 1. 启动后端（:8080）
+### 1. 启动后端
 
 ```bash
 cd backend
@@ -49,7 +49,7 @@ go build -o gv-admin-atom .
 ```bash
 cd frontend
 npm install
-npm run build      # 产出 dist/，后端会自动托管
+npm run build      # 产出 dist
 ```
 
 > 仅开发调试前端时：`npm run dev`（:5173，已配置代理转发 /api 到 :8080）。
@@ -59,7 +59,7 @@ npm run build      # 产出 dist/，后端会自动托管
 浏览器打开 <http://localhost:8080>
 
 - 默认账号：`admin` / `admin123`
-- 页面：设备看板（接入设备 / 在线设备 / 今日上报 / 今日告警卡片、7 天上报趋势、设备类型占比、30 天上报量、设备状态分布、最新告警列表）、用户管理（搜索、分页、增删改，仅管理员可见）
+- 页面：设备看板、用户管理（仅管理员可见）
 
 ## 主要 API
 
