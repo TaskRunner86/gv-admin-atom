@@ -50,27 +50,16 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
+import { useUserStore } from '../stores'
 
 const router = useRouter()
+const userStore = useUserStore()
 
-const user = computed(() => {
-  try {
-    return JSON.parse(localStorage.getItem('user') || 'null')
-  } catch {
-    return null
-  }
-})
-
-const avatarText = computed(() => {
-  const name = user.value?.username || '?'
-  return name.charAt(0).toUpperCase()
-})
-
-// 用户管理仅对管理员开放
-const isAdmin = computed(() => user.value?.role === 'admin')
+// 登录用户信息与角色判断统一取自 user store
+const { user, isAdmin, avatarText } = storeToRefs(userStore)
 
 const handleCommand = async (command) => {
   if (command === 'logout') {
@@ -79,8 +68,7 @@ const handleCommand = async (command) => {
       confirmButtonText: '退出',
       cancelButtonText: '取消'
     })
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    userStore.logout()
     router.push('/login')
   }
 }

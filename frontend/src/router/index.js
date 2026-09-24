@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import pinia, { useUserStore } from '../stores'
 
 const routes = [
   {
@@ -33,25 +34,16 @@ const router = createRouter({
   routes
 })
 
-// 当前登录用户信息（登录成功后写入 localStorage）
-const currentUser = () => {
-  try {
-    return JSON.parse(localStorage.getItem('user') || 'null')
-  } catch {
-    return null
-  }
-}
-
 // 登录守卫：未登录跳转登录页，已登录访问登录页则回首页；管理员专属页面拦截普通用户
 router.beforeEach((to) => {
-  const token = localStorage.getItem('token')
-  if (to.path !== '/login' && !token) {
+  const userStore = useUserStore(pinia)
+  if (to.path !== '/login' && !userStore.isLoggedIn) {
     return '/login'
   }
-  if (to.path === '/login' && token) {
+  if (to.path === '/login' && userStore.isLoggedIn) {
     return '/'
   }
-  if (to.meta.adminOnly && currentUser()?.role !== 'admin') {
+  if (to.meta.adminOnly && !userStore.isAdmin) {
     return '/dashboard'
   }
 })

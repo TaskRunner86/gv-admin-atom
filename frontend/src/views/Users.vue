@@ -85,19 +85,15 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
-import { getUsers, createUser, updateUser, deleteUser } from '../api'
+import { useUsersStore } from '../stores'
 
-const loading = ref(false)
-const list = ref([])
-const total = ref(0)
-const page = ref(1)
-const pageSize = ref(10)
-const keyword = ref('')
+const usersStore = useUsersStore()
+const { list, total, page, pageSize, keyword, loading, saving } = storeToRefs(usersStore)
 
 const dialogVisible = ref(false)
-const saving = ref(false)
 const formRef = ref(null)
 
 const emptyForm = () => ({
@@ -113,21 +109,9 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
-const load = async () => {
-  loading.value = true
-  try {
-    const data = await getUsers({ page: page.value, pageSize: pageSize.value, keyword: keyword.value })
-    list.value = data.list
-    total.value = data.total
-  } finally {
-    loading.value = false
-  }
-}
+const load = () => usersStore.load()
 
-const handleSearch = () => {
-  page.value = 1
-  load()
-}
+const handleSearch = () => usersStore.search()
 
 const openCreate = () => {
   Object.assign(form, emptyForm())
@@ -145,20 +129,14 @@ const openEdit = (row) => {
 
 const handleSave = async () => {
   await formRef.value.validate()
-  saving.value = true
-  try {
-    if (form.id) {
-      await updateUser(form.id, form)
-      ElMessage.success('修改成功')
-    } else {
-      await createUser(form)
-      ElMessage.success('创建成功')
-    }
-    dialogVisible.value = false
-    load()
-  } finally {
-    saving.value = false
+  if (form.id) {
+    await usersStore.update(form.id, form)
+    ElMessage.success('修改成功')
+  } else {
+    await usersStore.create(form)
+    ElMessage.success('创建成功')
   }
+  dialogVisible.value = false
 }
 
 const handleDelete = async (row) => {
@@ -167,12 +145,8 @@ const handleDelete = async (row) => {
     confirmButtonText: '删除',
     cancelButtonText: '取消'
   })
-  await deleteUser(row.id)
+  await usersStore.remove(row.id)
   ElMessage.success('删除成功')
-  if (list.value.length === 1 && page.value > 1) {
-    page.value -= 1
-  }
-  load()
 }
 
 onMounted(load)

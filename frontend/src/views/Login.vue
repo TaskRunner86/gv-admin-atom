@@ -33,9 +33,10 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
-import { login } from '../api'
+import { useUserStore } from '../stores'
 
 const router = useRouter()
+const userStore = useUserStore()
 const formRef = ref(null)
 const loading = ref(false)
 
@@ -53,9 +54,7 @@ const handleLogin = async () => {
   await formRef.value.validate()
   loading.value = true
   try {
-    const data = await login(form)
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
+    await userStore.login(form)
     ElMessage.success('登录成功')
     router.push('/')
   } finally {

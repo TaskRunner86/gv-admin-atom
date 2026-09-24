@@ -1,15 +1,16 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import router from '../router'
+import pinia, { useUserStore } from '../stores'
 
 const http = axios.create({
   baseURL: '/api',
   timeout: 15000
 })
 
-// 请求拦截：附加 token
+// 请求拦截：附加 token（统一从 user store 读取登录态）
 http.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  const { token } = useUserStore(pinia)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -30,8 +31,7 @@ http.interceptors.response.use(
     const status = err.response?.status
     const message = err.response?.data?.message
     if (status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
+      useUserStore(pinia).clearAuth()
       router.push('/login')
       ElMessage.error(message || '登录已过期，请重新登录')
     } else {

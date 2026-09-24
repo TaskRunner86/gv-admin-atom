@@ -79,18 +79,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { getOverview } from '../api'
+import { computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDashboardStore } from '../stores'
 import EChart from '../components/EChart.vue'
 
-const overview = ref({
-  stats: { totalDevices: 0, onlineDevices: 0, todayMessages: 0, todayAlerts: 0 },
-  trend: [],
-  monthTrend: [],
-  typeDist: [],
-  statusDist: [],
-  recentAlerts: []
-})
+const dashboardStore = useDashboardStore()
+const { overview } = storeToRefs(dashboardStore)
 
 const formatNumber = (n) => Number(n || 0).toLocaleString('zh-CN')
 const formatCompact = (n) => {
@@ -201,7 +196,7 @@ const statusTagType = (status) => {
 
 onMounted(async () => {
   try {
-    overview.value = await getOverview()
+    await dashboardStore.fetchOverview()
   } catch {
     /* 拦截器已提示 */
   }
