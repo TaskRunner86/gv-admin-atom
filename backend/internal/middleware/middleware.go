@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"gv-dashboard/internal/database"
+	"gv-admin-atom/internal/database"
 )
 
 // CORS 允许跨域访问（开发时前端 5173 直连后端）。

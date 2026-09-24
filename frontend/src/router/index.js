@@ -57,7 +57,7 @@ router.beforeEach((to) => {
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} - GV Dashboard` : 'GV Dashboard'
+  document.title = to.meta.title ? `${to.meta.title} - GV-Admin-Atom` : 'GV-Admin-Atom'
 })
 
 export default router

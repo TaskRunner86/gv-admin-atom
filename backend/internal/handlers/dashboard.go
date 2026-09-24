@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"gv-dashboard/internal/database"
+	"gv-admin-atom/internal/database"
 )
 
 // DashboardOverview 返回物联网看板首页所需聚合数据：

@@ -1,4 +1,4 @@
-module gv-dashboard
+module gv-admin-atom
 
 go 1.27.0
 

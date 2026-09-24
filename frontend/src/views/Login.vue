@@ -3,7 +3,7 @@
     <div class="login-bg"></div>
     <el-card class="login-card" shadow="always">
       <div class="login-header">
-        <h2>GV Dashboard</h2>
+        <h2>GV-Admin-Atom</h2>
         <p>物联网设备接入与运行监控平台</p>
       </div>
       <el-form ref="formRef" :model="form" :rules="rules" size="large" @keyup.enter="handleLogin">

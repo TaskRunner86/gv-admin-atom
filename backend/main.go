@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"gv-dashboard/internal/database"
-	"gv-dashboard/internal/handlers"
-	"gv-dashboard/internal/middleware"
+	"gv-admin-atom/internal/database"
+	"gv-admin-atom/internal/handlers"
+	"gv-admin-atom/internal/middleware"
 )
 
 func main() {

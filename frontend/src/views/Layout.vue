@@ -3,7 +3,7 @@
     <el-aside width="220px" class="aside">
       <div class="logo">
         <el-icon :size="22" color="#409eff"><Cpu /></el-icon>
-        <span>GV Dashboard</span>
+        <span>GV-Admin-Atom</span>
       </div>
       <el-menu
         :default-active="$route.path"

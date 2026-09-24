@@ -9,7 +9,7 @@ backend/data/
 *.db
 *.db-shm
 *.db-wal
-gv-dashboard
+gv-admin-atom
 
 # 日志
 *.log

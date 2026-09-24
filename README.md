@@ -1,4 +1,4 @@
-# GV Dashboard 平台
+# gv-admin-atom 平台
 
 基于 **Vue 3 + Element Plus + Go + SQLite3** 的前后端分离管理平台，支持登录鉴权、数据看板与用户管理。
 
@@ -37,8 +37,8 @@ gv-admin-atom/
 
 ```bash
 cd backend
-go build -o gv-dashboard .
-./gv-dashboard
+go build -o gv-admin-atom .
+./gv-admin-atom
 # 或开发模式：go run .
 ```
 

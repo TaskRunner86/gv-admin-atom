@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"gv-dashboard/internal/database"
-	"gv-dashboard/internal/middleware"
+	"gv-admin-atom/internal/database"
+	"gv-admin-atom/internal/middleware"
 )
 
 const tokenTTL = 24 * time.Hour

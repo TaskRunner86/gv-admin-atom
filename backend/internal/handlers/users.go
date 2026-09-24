@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"gv-dashboard/internal/database"
-	"gv-dashboard/internal/middleware"
+	"gv-admin-atom/internal/database"
+	"gv-admin-atom/internal/middleware"
 )
 
 type userRow struct {
