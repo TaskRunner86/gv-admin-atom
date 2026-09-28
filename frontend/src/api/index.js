@@ -41,14 +41,14 @@ http.interceptors.response.use(
   }
 )
 
-// ===== 认证 =====
+// 认证
 export const login = (data) => http.post('/login', data)
 export const getProfile = () => http.get('/user/profile')
 
-// ===== 看板 =====
+// 看板
 export const getOverview = () => http.get('/dashboard/overview')
 
-// ===== 用户管理 =====
+// 用户管理
 export const getUsers = (params) => http.get('/users', { params })
 export const createUser = (data) => http.post('/users', data)
 export const updateUser = (id, data) => http.put(`/users/${id}`, data)
