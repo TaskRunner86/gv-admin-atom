@@ -40,4 +40,4 @@ ok "后端编译完成"
 
 cd "$ROOT_DIR"
 ok "全部完成，耗时 $(( $(date +%s) - START ))s"
-printf '\n启动服务：\n  cd backend && ./%s\n访问：http://localhost:8080\n' "$BIN_NAME"
+printf '\n启动服务：\ncd backend && ./%s\n\n访问：\nhttp://localhost:8080\n\n' "$BIN_NAME"
