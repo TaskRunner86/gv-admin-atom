@@ -73,17 +73,6 @@ CREATE TABLE IF NOT EXISTS daily_metrics (
 	devices  INTEGER NOT NULL DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS alerts (
-	id         INTEGER PRIMARY KEY AUTOINCREMENT,
-	alert_no   TEXT    NOT NULL UNIQUE,
-	device_no  TEXT    NOT NULL,
-	metric     TEXT    NOT NULL,
-	level      TEXT    NOT NULL DEFAULT '提示',
-	value      TEXT    NOT NULL DEFAULT '',
-	status     TEXT    NOT NULL DEFAULT '未处理',
-	created_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
-);
-
 CREATE TABLE IF NOT EXISTS tokens (
 	token      TEXT    PRIMARY KEY,
 	user_id    INTEGER NOT NULL,
@@ -94,7 +83,18 @@ CREATE TABLE IF NOT EXISTS tokens (
 		return err
 	}
 	dropLegacyUserColumns()
+	dropLegacyAlerts()
 	return nil
+}
+
+// dropLegacyAlerts 清理历史库中已下线的告警功能：删除 alerts 表，并把设备的「告警」状态归并为「在线」。
+func dropLegacyAlerts() {
+	if _, err := DB.Exec("DROP TABLE IF EXISTS alerts"); err != nil {
+		log.Printf("清理历史告警表失败: %v", err)
+	}
+	if _, err := DB.Exec("UPDATE devices SET status = '在线' WHERE status = '告警'"); err != nil {
+		log.Printf("清理历史设备告警状态失败: %v", err)
+	}
 }
 
 // dropLegacyUserColumns 清理历史库中 users 表已废弃的 nickname / email / status 列。
@@ -126,7 +126,7 @@ func dropLegacyUserColumns() {
 	}
 }
 
-// seed 在表为空时写入演示数据。
+// seed 在表为空时写入演示数据；上报指标按最近 30 天滚动补齐，保证看板趋势图默认有数据。
 func seed() error {
 	var count int
 	if err := DB.QueryRow("SELECT COUNT(*) FROM users").Scan(&count); err != nil {
@@ -145,21 +145,9 @@ func seed() error {
 			return err
 		}
 	}
-	if err := DB.QueryRow("SELECT COUNT(*) FROM daily_metrics").Scan(&count); err != nil {
+	// 上报指标每次都滚动补齐最近 30 天（幂等），使看板趋势图默认有连续数据
+	if err := seedMetrics(); err != nil {
 		return err
-	}
-	if count == 0 {
-		if err := seedMetrics(); err != nil {
-			return err
-		}
-	}
-	if err := DB.QueryRow("SELECT COUNT(*) FROM alerts").Scan(&count); err != nil {
-		return err
-	}
-	if count == 0 {
-		if err := seedAlerts(); err != nil {
-			return err
-		}
 	}
 	return nil
 }

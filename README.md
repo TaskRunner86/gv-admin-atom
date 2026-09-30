@@ -42,7 +42,7 @@ go build -o gv-admin-atom .
 # 或开发模式：go run .
 ```
 
-启动时会自动创建 SQLite 数据库并写入演示数据（用户、24 台设备台账、30 天上报指标、36 条告警记录）。
+启动时会自动创建 SQLite 数据库并写入演示数据（用户、24 台设备台账、30 天上报指标）。
 
 ### 2. 构建前端
 
@@ -68,7 +68,7 @@ npm run build      # 产出 dist
 | POST | /api/login | 登录，返回 token | 否 |
 | GET | /api/health | 健康检查 | 否 |
 | GET | /api/user/profile | 当前用户信息 | 是 |
-| GET | /api/dashboard/overview | 看板聚合数据（设备统计 / 上报趋势 / 类型与状态分布 / 最新告警） | 是 |
+| GET | /api/dashboard/overview | 看板聚合数据（设备统计 / 上报趋势 / 类型与状态分布） | 是 |
 | GET | /api/users | 用户分页列表（page/pageSize/keyword） | 管理员 |
 | POST | /api/users | 新增用户 | 管理员 |
 | PUT | /api/users/{id} | 更新用户（密码留空不改） | 管理员 |

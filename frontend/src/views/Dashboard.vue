@@ -2,7 +2,7 @@
   <div class="dashboard">
     <!-- 统计卡片 -->
     <el-row :gutter="16" class="stat-row">
-      <el-col v-for="card in statCards" :key="card.label" :xs="12" :sm="12" :md="6">
+      <el-col v-for="card in statCards" :key="card.label" :xs="12" :sm="12" :md="8">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-body">
             <div class="stat-icon" :style="{ backgroundColor: card.color + '1a', color: card.color }">
@@ -19,13 +19,13 @@
 
     <!-- 上报趋势折线 + 设备类型饼图 -->
     <el-row :gutter="16" class="chart-row">
-      <el-col :xs="24" :md="16">
+      <el-col :xs="24" :md="14">
         <el-card shadow="hover">
           <template #header>近 7 天数据上报趋势</template>
           <EChart :option="trendOption" height="320px" />
         </el-card>
       </el-col>
-      <el-col :xs="24" :md="8">
+      <el-col :xs="24" :md="10">
         <el-card shadow="hover">
           <template #header>设备类型占比</template>
           <EChart :option="typeOption" height="320px" />
@@ -48,33 +48,6 @@
         </el-card>
       </el-col>
     </el-row>
-
-    <!-- 最新告警 -->
-    <el-card shadow="hover" class="table-card">
-      <template #header>最新告警</template>
-      <el-table :data="recentAlerts" stripe style="width: 100%">
-        <el-table-column prop="alertNo" label="告警编号" width="160" />
-        <el-table-column prop="deviceName" label="设备" min-width="170" show-overflow-tooltip />
-        <el-table-column prop="location" label="点位" width="130" show-overflow-tooltip />
-        <el-table-column prop="metric" label="告警指标" min-width="140" show-overflow-tooltip />
-        <el-table-column prop="level" label="级别" width="90">
-          <template #default="{ row }">
-            <el-tag :type="levelTagType(row.level)" size="small">{{ row.level }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="value" label="触发值" width="130" align="right">
-          <template #default="{ row }">
-            <span class="alert-value">{{ row.value }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="处理状态" width="110">
-          <template #default="{ row }">
-            <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createdAt" label="告警时间" min-width="160" />
-      </el-table>
-    </el-card>
   </div>
 </template>
 
@@ -96,15 +69,14 @@ const formatCompact = (n) => {
 const statCards = computed(() => [
   { label: '接入设备总数', value: formatNumber(overview.value.stats.totalDevices), icon: 'Monitor', color: '#409eff' },
   { label: '在线设备数', value: formatNumber(overview.value.stats.onlineDevices), icon: 'Connection', color: '#67c23a' },
-  { label: '今日上报消息', value: formatCompact(overview.value.stats.todayMessages), icon: 'DataLine', color: '#e6a23c' },
-  { label: '今日告警数', value: formatNumber(overview.value.stats.todayAlerts), icon: 'Warning', color: '#f56c6c' }
+  { label: '今日上报消息', value: formatCompact(overview.value.stats.todayMessages), icon: 'DataLine', color: '#e6a23c' }
 ])
 
 const trendOption = computed(() => ({
   tooltip: { trigger: 'axis' },
   legend: { data: ['消息上报量', '在线设备数'] },
   grid: { left: 60, right: 55, top: 40, bottom: 30 },
-  xAxis: { type: 'category', data: overview.value.trend.map((p) => p.day.slice(5)) },
+  xAxis: { type: 'category', boundaryGap: false, data: overview.value.trend.map((p) => p.day.slice(5)) },
   yAxis: [
     { type: 'value', name: '条' },
     { type: 'value', name: '台', min: 0, splitLine: { show: false } }
@@ -182,18 +154,6 @@ const statusOption = computed(() => ({
   ]
 }))
 
-const recentAlerts = computed(() => overview.value.recentAlerts)
-
-const levelTagType = (level) => {
-  const map = { 严重: 'danger', 警告: 'warning', 提示: 'info' }
-  return map[level] || 'info'
-}
-
-const statusTagType = (status) => {
-  const map = { 未处理: 'danger', 处理中: 'warning', 已恢复: 'success' }
-  return map[status] || 'info'
-}
-
 onMounted(async () => {
   try {
     await dashboardStore.fetchOverview()
@@ -243,14 +203,5 @@ onMounted(async () => {
 
 .chart-row {
   margin-bottom: 16px;
-}
-
-.table-card {
-  margin-bottom: 16px;
-}
-
-.alert-value {
-  color: #f56c6c;
-  font-weight: 600;
 }
 </style>
