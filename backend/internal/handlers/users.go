@@ -36,7 +36,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var total int64
-	err := database.DB.QueryRow("SELECT COUNT(*) FROM users "+where, args...).Scan(&total); 
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM users "+where, args...).Scan(&total)
 	if err != nil {
 		Fail(w, http.StatusInternalServerError, 500, "查询失败: "+err.Error())
 		return
@@ -55,7 +55,8 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	list := make([]userRow, 0, pageSize)
 	for rows.Next() {
 		var u userRow
-		if err := rows.Scan(&u.ID, &u.Username, &u.Role, &u.CreatedAt); err != nil {
+		err := rows.Scan(&u.ID, &u.Username, &u.Role, &u.CreatedAt)
+		if err != nil {
 			Fail(w, http.StatusInternalServerError, 500, "读取数据失败: "+err.Error())
 			return
 		}
