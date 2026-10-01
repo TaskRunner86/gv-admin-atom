@@ -36,7 +36,8 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var total int64
-	if err := database.DB.QueryRow("SELECT COUNT(*) FROM users "+where, args...).Scan(&total); err != nil {
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM users "+where, args...).Scan(&total); 
+	if err != nil {
 		Fail(w, http.StatusInternalServerError, 500, "查询失败: "+err.Error())
 		return
 	}
