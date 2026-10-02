@@ -140,7 +140,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		query = "UPDATE users SET role = ?, password = ? WHERE id = ?"
 		args = []any{role, hash, id}
 	}
-	_, err := database.DB.Exec(query, args...)
+	_, err = database.DB.Exec(query, args...)
 	if err != nil {
 		Fail(w, http.StatusInternalServerError, 500, "更新失败: "+err.Error())
 		return
@@ -161,7 +161,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var username string
-	err := database.DB.QueryRow("SELECT username FROM users WHERE id = ?", id).Scan(&username)
+	err = database.DB.QueryRow("SELECT username FROM users WHERE id = ?", id).Scan(&username)
 	if err != nil {
 		Fail(w, http.StatusNotFound, 404, "用户不存在")
 		return
@@ -170,7 +170,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		Fail(w, http.StatusForbidden, 403, "不能删除内置管理员")
 		return
 	}
-	_, err := database.DB.Exec("DELETE FROM users WHERE id = ?", id)
+	_, err = database.DB.Exec("DELETE FROM users WHERE id = ?", id)
 	if err != nil {
 		Fail(w, http.StatusInternalServerError, 500, "删除失败: "+err.Error())
 		return
