@@ -17,7 +17,8 @@ func main() {
 	if dbPath == "" {
 		dbPath = filepath.Join("data", "dashboard.db")
 	}
-	if err := database.Init(dbPath); err != nil {
+	err := database.Init(dbPath)
+	if err != nil {
 		log.Fatalf("初始化数据库失败: %v", err)
 	}
 	defer database.Close()
@@ -43,27 +44,21 @@ func main() {
 	mux.Handle("PUT /api/users/{id}", adminOnly(handlers.UpdateUser))
 	mux.Handle("DELETE /api/users/{id}", adminOnly(handlers.DeleteUser))
 
-	// 若前端已构建（frontend/dist 存在），由 Go 直接托管静态资源
-	// 依次尝试：仓库根目录启动（frontend/dist）、backend 目录启动（../frontend/dist）、
-	// 以及相对可执行文件所在目录的 frontend/dist
 	dist := ""
 	candidates := []string{
-		filepath.Join("frontend", "dist"),
-		filepath.Join("..", "frontend", "dist"),
+		filepath.Join("dist"),
 	}
-	if exe, err := os.Executable(); err == nil {
+	exe, err := os.Executable()
+	if err == nil {
 		exeDir := filepath.Dir(exe)
-		candidates = append(candidates,
-			filepath.Join(exeDir, "frontend", "dist"),
-			filepath.Join(exeDir, "..", "frontend", "dist"),
-		)
+		dist = filepath.Join(exeDir, "dist")
 	}
-	for _, c := range candidates {
-		if info, err := os.Stat(c); err == nil && info.IsDir() {
-			dist = c
-			break
-		}
+	info, err := os.Stat(filepath.Join(exeDir, "dist"))
+	if err == nil && info.IsDir() {
+		dist = c
+		return
 	}
+
 	if dist != "" {
 		fileServer := http.FileServer(http.Dir(dist))
 		mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -80,11 +75,14 @@ func main() {
 	}
 
 	addr := ":8080"
-	if p := os.Getenv("PORT"); p != "" {
+	p := os.Getenv("PORT")
+	if p != "" {
 		addr = ":" + p
 	}
-	log.Printf("Dashboard 服务已启动: http://localhost%s", addr)
-	if err := http.ListenAndServe(addr, middleware.CORS(mux)); err != nil {
+	log.Printf("GV-Admin-Atom 服务已启动: http://localhost%s", addr)
+
+	err := http.ListenAndServe(addr, middleware.CORS(mux))
+	if err != nil {
 		log.Fatalf("服务启动失败: %v", err)
 	}
 }
