@@ -45,17 +45,15 @@ func main() {
 	mux.Handle("DELETE /api/users/{id}", adminOnly(handlers.DeleteUser))
 
 	dist := ""
-	candidates := []string{
-		filepath.Join("dist"),
-	}
+	exeDir := ""
 	exe, err := os.Executable()
 	if err == nil {
 		exeDir := filepath.Dir(exe)
 		dist = filepath.Join(exeDir, "dist")
 	}
 	info, err := os.Stat(filepath.Join(exeDir, "dist"))
-	if err == nil && info.IsDir() {
-		dist = c
+	if err != nil && !info.IsDir() {
+		log.Printf("执行文件错误: %s", dist)
 		return
 	}
 
@@ -81,7 +79,7 @@ func main() {
 	}
 	log.Printf("GV-Admin-Atom 服务已启动: http://localhost%s", addr)
 
-	err := http.ListenAndServe(addr, middleware.CORS(mux))
+	err = http.ListenAndServe(addr, middleware.CORS(mux))
 	if err != nil {
 		log.Fatalf("服务启动失败: %v", err)
 	}

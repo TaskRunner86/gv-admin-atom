@@ -12,6 +12,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_DIR="$ROOT_DIR/backend"
 FRONTEND_DIR="$ROOT_DIR/frontend"
 BIN_NAME="gv-admin-atom"
+DIST_DIR="dist"
 
 info() { printf '\033[34m[ build ]\033[0m %s\n' "$*"; }
 ok() { printf '\033[32m[ ok ]\033[0m %s\n' "$*"; }
@@ -38,11 +39,15 @@ cd "$BACKEND_DIR"
 go build -o "$BIN_NAME" .
 ok "后端编译完成"
 
-# 拷贝可执行文件到仓库根目录，方便在根目录直接启动
+# 拷贝可执行文件到目录，方便在根目录直接启动
 info "拷贝可执行文件 -> ./$BIN_NAME"
 cp -f "$BACKEND_DIR/$BIN_NAME" "$ROOT_DIR/$BIN_NAME"
 chmod +x "$ROOT_DIR/$BIN_NAME"
 ok "已拷贝到 ./$BIN_NAME"
+
+info "拷贝前端文件 -> ./$DIST_DIR"
+cp -rf "$FRONTEND_DIR/$DIST_DIR" "$ROOT_DIR/$DIST_DIR"
+ok "已拷贝到 ./$DIST_DIR"
 
 cd "$ROOT_DIR"
 ok "全部完成，耗时 $(( $(date +%s) - START ))s"
