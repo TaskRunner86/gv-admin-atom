@@ -66,7 +66,8 @@ func Auth(next http.Handler) http.Handler {
 			http.Error(w, `{"code":500,"message":"鉴权查询失败"}`, http.StatusInternalServerError)
 			return
 		}
-		if exp, perr := time.ParseInLocation("2006-01-02 15:04:05", expires, time.Local); perr == nil && time.Now().After(exp) {
+		exp, perr := time.ParseInLocation("2006-01-02 15:04:05", expires, time.Local)
+		if perr == nil && time.Now().After(exp) {
 			_, _ = database.DB.Exec("DELETE FROM tokens WHERE token = ?", token)
 			http.Error(w, `{"code":401,"message":"登录已过期，请重新登录"}`, http.StatusUnauthorized)
 			return
