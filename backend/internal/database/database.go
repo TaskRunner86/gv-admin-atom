@@ -29,11 +29,11 @@ func Init(dbPath string) error {
 	db.SetMaxOpenConns(1)
 	DB = db
 
-	err := migrate()
+	err = migrate()
 	if err != nil {
 		return err
 	}
-	err := seed()
+	err = seed()
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func dropLegacyAlerts() {
 	if err != nil {
 		log.Printf("清理历史告警表失败: %v", err)
 	}
-	_, err := DB.Exec("UPDATE devices SET status = '在线' WHERE status = '告警'")
+	_, err = DB.Exec("UPDATE devices SET status = '在线' WHERE status = '告警'")
 	if err != nil {
 		log.Printf("清理历史设备告警状态失败: %v", err)
 	}
@@ -147,7 +147,7 @@ func seed() error {
 			return err
 		}
 	}
-	err := DB.QueryRow("SELECT COUNT(*) FROM devices").Scan(&count)
+	err = DB.QueryRow("SELECT COUNT(*) FROM devices").Scan(&count)
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func seed() error {
 		}
 	}
 	// 上报指标每次都滚动补齐最近 30 天（幂等），使看板趋势图默认有连续数据
-	err := seedMetrics()
+	err = seedMetrics()
 	if err != nil {
 		return err
 	}
