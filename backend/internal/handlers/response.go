@@ -24,7 +24,8 @@ func writeJSON(w http.ResponseWriter, status int, payload any) {
 
 // decodeJSON 解析请求体 JSON，失败时写入错误响应并返回 false。
 func decodeJSON(w http.ResponseWriter, r *http.Request, dst any) bool {
-	if err := json.NewDecoder(r.Body).Decode(dst); err != nil {
+	err := json.NewDecoder(r.Body).Decode(dst)
+	if err != nil {
 		Fail(w, http.StatusBadRequest, 400, "请求体格式错误: "+err.Error())
 		return false
 	}

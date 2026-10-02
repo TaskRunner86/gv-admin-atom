@@ -15,7 +15,8 @@ var DB *sql.DB
 
 // Init 打开（必要时创建）SQLite 数据库文件，建表并填充种子数据。
 func Init(dbPath string) error {
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0o755); err != nil {
+	err := os.MkdirAll(filepath.Dir(dbPath), 0o755)
+	if err != nil {
 		return fmt.Errorf("创建数据目录失败: %w", err)
 	}
 
@@ -24,13 +25,16 @@ func Init(dbPath string) error {
 	if err != nil {
 		return err
 	}
-	db.SetMaxOpenConns(1) // SQLite 单写者，避免并发写锁冲突
+	// SQLite 单写者，避免并发写锁冲突
+	db.SetMaxOpenConns(1)
 	DB = db
 
-	if err := migrate(); err != nil {
+	err := migrate()
+	if err != nil {
 		return err
 	}
-	if err := seed(); err != nil {
+	err := seed()
+	if err != nil {
 		return err
 	}
 	log.Printf("数据库就绪: %s", dbPath)
@@ -79,7 +83,8 @@ CREATE TABLE IF NOT EXISTS tokens (
 	expires_at TEXT    NOT NULL
 );
 `
-	if _, err := DB.Exec(schema); err != nil {
+	_, err := DB.Exec(schema)
+	if err != nil {
 		return err
 	}
 	dropLegacyUserColumns()
@@ -89,10 +94,12 @@ CREATE TABLE IF NOT EXISTS tokens (
 
 // dropLegacyAlerts 清理历史库中已下线的告警功能：删除 alerts 表，并把设备的「告警」状态归并为「在线」。
 func dropLegacyAlerts() {
-	if _, err := DB.Exec("DROP TABLE IF EXISTS alerts"); err != nil {
+	_, err := DB.Exec("DROP TABLE IF EXISTS alerts")
+	if err != nil {
 		log.Printf("清理历史告警表失败: %v", err)
 	}
-	if _, err := DB.Exec("UPDATE devices SET status = '在线' WHERE status = '告警'"); err != nil {
+	_, err := DB.Exec("UPDATE devices SET status = '在线' WHERE status = '告警'")
+	if err != nil {
 		log.Printf("清理历史设备告警状态失败: %v", err)
 	}
 }
@@ -110,7 +117,8 @@ func dropLegacyUserColumns() {
 		var cid, notNull, pk int
 		var name, typ string
 		var dflt any
-		if err := rows.Scan(&cid, &name, &typ, &notNull, &dflt, &pk); err != nil {
+		err := rows.Scan(&cid, &name, &typ, &notNull, &dflt, &pk)
+		if err != nil {
 			return
 		}
 		existing[name] = true
@@ -120,7 +128,8 @@ func dropLegacyUserColumns() {
 		if !existing[col] {
 			continue
 		}
-		if _, err := DB.Exec("ALTER TABLE users DROP COLUMN " + col); err != nil {
+		_, err := DB.Exec("ALTER TABLE users DROP COLUMN " + col)
+		if err != nil {
 			log.Printf("清理历史列 users.%s 失败: %v", col, err)
 		}
 	}
@@ -129,7 +138,8 @@ func dropLegacyUserColumns() {
 // seed 在表为空时写入演示数据；上报指标按最近 30 天滚动补齐，保证看板趋势图默认有数据。
 func seed() error {
 	var count int
-	if err := DB.QueryRow("SELECT COUNT(*) FROM users").Scan(&count); err != nil {
+	err := DB.QueryRow("SELECT COUNT(*) FROM users").Scan(&count)
+	if err != nil {
 		return err
 	}
 	if count == 0 {
@@ -137,7 +147,8 @@ func seed() error {
 			return err
 		}
 	}
-	if err := DB.QueryRow("SELECT COUNT(*) FROM devices").Scan(&count); err != nil {
+	err := DB.QueryRow("SELECT COUNT(*) FROM devices").Scan(&count)
+	if err != nil {
 		return err
 	}
 	if count == 0 {
@@ -146,7 +157,8 @@ func seed() error {
 		}
 	}
 	// 上报指标每次都滚动补齐最近 30 天（幂等），使看板趋势图默认有连续数据
-	if err := seedMetrics(); err != nil {
+	err := seedMetrics()
+	if err != nil {
 		return err
 	}
 	return nil

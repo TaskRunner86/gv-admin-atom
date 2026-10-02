@@ -18,9 +18,9 @@ type loginRequest struct {
 }
 
 type userInfo struct {
-	ID       int64  `json:"id"`
+	ID int64 `json:"id"`
 	Username string `json:"username"`
-	Role     string `json:"role"`
+	Role string `json:"role"`
 }
 
 // Login 登录接口：校验用户名密码，签发 token。
@@ -80,7 +80,8 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 
 func newToken() (string, error) {
 	b := make([]byte, 32)
-	if _, err := rand.Read(b); err != nil {
+	_, err := rand.Read(b)
+	if err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(b), nil

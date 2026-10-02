@@ -37,16 +37,16 @@ func DashboardOverview(w http.ResponseWriter, r *http.Request) {
 	}
 
 	OK(w, map[string]any{
-		"stats":      stats,
-		"trend":      trend,
+		"stats": stats,
+		"trend": trend,
 		"monthTrend": monthTrend,
-		"typeDist":   typeDist,
+		"typeDist": typeDist,
 		"statusDist": statusDist,
 	})
 }
 
 type stats struct {
-	TotalDevices  int64 `json:"totalDevices"`
+	TotalDevices int64 `json:"totalDevices"`
 	OnlineDevices int64 `json:"onlineDevices"`
 	TodayMessages int64 `json:"todayMessages"`
 }
@@ -69,9 +69,9 @@ func loadStats() (stats, error) {
 }
 
 type trendPoint struct {
-	Day      string `json:"day"`
-	Messages int64  `json:"messages"`
-	Devices  int64  `json:"devices"`
+	Day string `json:"day"`
+	Messages int64 `json:"messages"`
+	Devices int64 `json:"devices"`
 }
 
 // loadMetricTrend 读取最近 days 天的上报量与在线设备数（按日期升序）。
@@ -96,7 +96,7 @@ func loadMetricTrend(days int) ([]trendPoint, error) {
 }
 
 type categoryItem struct {
-	Name  string  `json:"name"`
+	Name string `json:"name"`
 	Value float64 `json:"value"`
 }
 
@@ -113,7 +113,8 @@ func loadTypeDist() ([]categoryItem, error) {
 	for rows.Next() {
 		var it categoryItem
 		var n int64
-		if err := rows.Scan(&it.Name, &n); err != nil {
+		err := rows.Scan(&it.Name, &n)
+		if err != nil {
 			return nil, err
 		}
 		it.Value = float64(n)
@@ -136,7 +137,8 @@ func loadStatusDist() ([]categoryItem, error) {
 	for rows.Next() {
 		var it categoryItem
 		var n int64
-		if err := rows.Scan(&it.Name, &n); err != nil {
+		err := rows.Scan(&it.Name, &n)
+		if err != nil {
 			return nil, err
 		}
 		it.Value = float64(n)

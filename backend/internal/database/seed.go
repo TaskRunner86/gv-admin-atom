@@ -48,10 +48,10 @@ func seedUsers() error {
 
 // deviceSeed 描述一台演示设备。
 type deviceSeed struct {
-	no     string
-	name   string
-	typ    string
-	loc    string
+	no string
+	name string
+	typ string
+	loc string
 	status string
 }
 
@@ -108,9 +108,10 @@ func seedDevices() error {
 		default:
 			lastSeen = now.Add(-time.Duration(6+i) * time.Hour)
 		}
-		if _, err := DB.Exec(
+		_, err := DB.Exec(
 			`INSERT INTO devices (device_no, name, type, location, status, firmware, last_seen_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-			d.no, d.name, d.typ, d.loc, d.status, fw, lastSeen.Format("2006-01-02 15:04:05")); err != nil {
+			d.no, d.name, d.typ, d.loc, d.status, fw, lastSeen.Format("2006-01-02 15:04:05"))
+		if err != nil {
 			return err
 		}
 	}
@@ -123,11 +124,14 @@ func seedMetrics() error {
 	now := time.Now()
 	for i := 29; i >= 0; i-- {
 		day := now.AddDate(0, 0, -i).Format("2006-01-02")
-		messages := 12000 + int64(29-i)*450 + randN(1800) // 上报量随时间增长
-		devices := 14 + int(randN(3))                     // 在线设备数 14~16
-		if _, err := DB.Exec(
+		// 上报量随时间增长
+		messages := 12000 + int64(29-i)*450 + randN(1800)
+		// 在线设备数 14~16
+		devices := 14 + int(randN(3))
+		_, err := DB.Exec(
 			`INSERT OR IGNORE INTO daily_metrics (day, messages, devices) VALUES (?, ?, ?)`,
-			day, messages, devices); err != nil {
+			day, messages, devices)
+		if err != nil {
 			return err
 		}
 	}
