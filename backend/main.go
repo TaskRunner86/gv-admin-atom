@@ -44,8 +44,27 @@ func main() {
 	mux.Handle("DELETE /api/users/{id}", adminOnly(handlers.DeleteUser))
 
 	// 若前端已构建（frontend/dist 存在），由 Go 直接托管静态资源
-	dist := filepath.Join("..", "frontend", "dist")
-	if _, err := os.Stat(dist); err == nil {
+	// 依次尝试：仓库根目录启动（frontend/dist）、backend 目录启动（../frontend/dist）、
+	// 以及相对可执行文件所在目录的 frontend/dist
+	dist := ""
+	candidates := []string{
+		filepath.Join("frontend", "dist"),
+		filepath.Join("..", "frontend", "dist"),
+	}
+	if exe, err := os.Executable(); err == nil {
+		exeDir := filepath.Dir(exe)
+		candidates = append(candidates,
+			filepath.Join(exeDir, "frontend", "dist"),
+			filepath.Join(exeDir, "..", "frontend", "dist"),
+		)
+	}
+	for _, c := range candidates {
+		if info, err := os.Stat(c); err == nil && info.IsDir() {
+			dist = c
+			break
+		}
+	}
+	if dist != "" {
 		fileServer := http.FileServer(http.Dir(dist))
 		mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// SPA 回退：深层路由（如 /dashboard）刷新时回退到 index.html

@@ -2,7 +2,7 @@
 #
 # 编译产物：前端（frontend/dist）后端（backend/gv-admin-atom）
 #
-# 启动：cd backend && ./gv-admin-atom
+# 启动：./gv-admin-atom（可执行文件已拷贝到仓库根目录）
 #
 # 用法：./build.sh
 #
@@ -38,7 +38,13 @@ cd "$BACKEND_DIR"
 go build -o "$BIN_NAME" .
 ok "后端编译完成"
 
+# 拷贝可执行文件到仓库根目录，方便在根目录直接启动
+info "拷贝可执行文件 -> ./$BIN_NAME"
+cp -f "$BACKEND_DIR/$BIN_NAME" "$ROOT_DIR/$BIN_NAME"
+chmod +x "$ROOT_DIR/$BIN_NAME"
+ok "已拷贝到 ./$BIN_NAME"
+
 cd "$ROOT_DIR"
 ok "全部完成，耗时 $(( $(date +%s) - START ))s"
-printf '\n启动服务: cd backend && ./%s\n' "$BIN_NAME"
+printf '\n启动服务: ./%s\n' "$BIN_NAME"
 printf '访问: http://localhost:8080\n\n'
