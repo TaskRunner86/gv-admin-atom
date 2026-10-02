@@ -55,8 +55,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	expires := time.Now().Add(tokenTTL).Format("2006-01-02 15:04:05")
-	if _, err := database.DB.Exec(
-		"INSERT INTO tokens (token, user_id, expires_at) VALUES (?, ?, ?)", token, u.ID, expires); err != nil {
+	
+	_, err = database.DB.Exec(
+		"INSERT INTO tokens (token, user_id, expires_at) VALUES (?, ?, ?)", token, u.ID, expires)
+	if err != nil {
 		Fail(w, http.StatusInternalServerError, 500, "保存 token 失败")
 		return
 	}
