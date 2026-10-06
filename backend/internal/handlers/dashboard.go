@@ -7,8 +7,6 @@ import (
 	"gv-admin-atom/internal/database"
 )
 
-// DashboardOverview 返回物联网看板首页所需聚合数据：
-// 统计卡片、上报趋势、设备类型分布、设备状态分布。
 func DashboardOverview(w http.ResponseWriter, r *http.Request) {
 	stats, err := loadStats()
 	if err != nil {
@@ -100,7 +98,6 @@ type categoryItem struct {
 	Value float64 `json:"value"`
 }
 
-// loadTypeDist 统计各类型设备数量（按数量降序）。
 func loadTypeDist() ([]categoryItem, error) {
 	rows, err := database.DB.Query(
 		"SELECT type, COUNT(*) FROM devices GROUP BY type ORDER BY COUNT(*) DESC, type")
