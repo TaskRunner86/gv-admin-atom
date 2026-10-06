@@ -22,7 +22,7 @@ func writeJSON(w http.ResponseWriter, status int, payload any) {
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
-// decodeJSON 解析请求体 JSON，失败时写入错误响应并返回 false。
+// decodeJSON 解析请求体 JSON，失败时写入错误响应并返回 false
 func decodeJSON(w http.ResponseWriter, r *http.Request, dst any) bool {
 	err := json.NewDecoder(r.Body).Decode(dst)
 	if err != nil {
